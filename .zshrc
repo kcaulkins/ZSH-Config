@@ -53,6 +53,8 @@ source $ZSH/oh-my-zsh.sh
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
 export PATH="/Users/keithcaulkins:$PATH"
 export PATH="/usr/local/bin:$PATH"
+
+# PHP path for drush
 export PATH="/Applications/MAMP/Library/bin:/Applications/MAMP/bin/php/php5.3.29/bin:$PATH"
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -82,9 +84,8 @@ export PATH="/Applications/MAMP/Library/bin:/Applications/MAMP/bin/php/php5.3.29
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias fuck='eval $(thefuck $(fc -ln -1 | tail -n 1)); fc -R'
 alias sites="cd ~/www"
-alias zprofile="atom ~/.zshrc"
+alias zprofile="sudo nano ~/.zshrc"
 alias cca="drush cc all"
 alias dev="git checkout dev"
 alias stage="git checkout stage"
@@ -93,22 +94,27 @@ alias keith="ssh root@keith.solutions"
 alias o="open ."
 alias ao="atom ."
 
-
+# Usage:
+# deploy master
+# Pulls and pushes current branch, checks out target branch, merges original branch in,
+# pushes branch, then checks out original branch.
 deploy() {
   local branch=$(current_branch)
   ggl
   ggp
-  echo .......Checking out
-  echo $1
+  echo .......Checking out $1
   git checkout $1
   ggl
-  echo .......Merging
-  echo $branch
+  echo .......Merging $branch
   git merge $branch
   ggp
   git checkout $branch
   echo .......Success
 }
+
+# Usage: importDB test_db ~/Downloads/database.sql
+# Imports into database($1) the selected file ($2)
+# For use on non-Drupal sites
 importDB() {
   /Applications/MAMP/library/bin/mysql -u root -p $1 < $2
 }
@@ -125,18 +131,28 @@ dimp() {
   drush cc all
 }
 
+# Sets entire directory with as open permissions as possible (dangerous!)
 perm () {
   sudo chmod -R 777 $1
 }
+
+# Reverts all Drupal features
 fra () {
   drush features-revert-all -y
 }
+
+# Downloads Drupal module (if it doesn't exist) and enables it.
 den () {
   drush en $1 -y
 }
+
+# Sets stage file proxy variable within Drupal - http://drupal.org/stage_file_proxy
 sfp() {
   drush variable-set stage_file_proxy_origin "$@"
 }
+
+# Usage: commit 'message'
+# Adds all changed files, commits with message, pulls then pushes to current branch.
 commit () {
   ga -A :/
   gcmsg "$@"
@@ -144,13 +160,5 @@ commit () {
   ggp
 }
 
-# Site aliases
-alias ringling="cd ~/www/rng-mainsite/site/sites/all"
-alias atl="cd ~/www/atlarge-site-2014/site/sites/all"
-alias dvm="cd ~/www/petco-dvm/site/sites/all"
-alias tog="cd ~/www/tog-drupal/site/sites/all"
-alias trac="cd ~/www/trac/site/sites/all"
-
-# Codesniffing
-alias drupalcs="phpcs --standard=/Users/keithcaulkins/.drush/coder/coder_sniffer/Drupal --extensions='php,module,inc,install,text,profile,theme,js,css,info,txt'"
+# Z - https://github.com/rupa/z
 source ~/.bin/z/z.sh
